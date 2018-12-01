@@ -48,29 +48,6 @@ pub fn read_input() -> LinkedList<i32> {
 ///
 /// assert_eq!(res, 4);
 /// ```
-///
-/// ```
-/// use std::collections::LinkedList;
-/// use advent_of_code_2018::one;
-///
-/// let mut changes = LinkedList::new();
-///
-/// changes.push_back(2);
-///
-/// let res = one::sum_changes(changes);
-///
-/// assert_eq!(res, 2);
-/// ```
-///
-/// ```
-/// use std::collections::LinkedList;
-/// use advent_of_code_2018::one;
-///
-/// let mut changes = LinkedList::new();
-/// let res = one::sum_changes(changes);
-///
-/// assert_eq!(res, 0);
-/// ```
 pub fn sum_changes(changes: LinkedList<i32>) -> i32 {
     changes.iter().fold(0, |sum, x| sum + x)
 }
@@ -95,21 +72,6 @@ pub fn sum_changes(changes: LinkedList<i32>) -> i32 {
 ///
 /// assert_eq!(res, 2);
 /// ```
-///
-/// ```
-/// use std::collections::LinkedList;
-/// use advent_of_code_2018::one;
-///
-/// let mut changes = LinkedList::new();
-///
-/// changes.push_back(-1);
-/// changes.push_back(1);
-/// changes.push_back(2);
-///
-/// let res = one::get_first_repeat_frequency(changes);
-///
-/// assert_eq!(res, 2);
-/// ```
 pub fn get_first_repeat_frequency(changes: LinkedList<i32>) -> i32 {
     let mut frequencies: HashSet<i32> = HashSet::new();
     let mut sum = 0;
@@ -124,5 +86,72 @@ pub fn get_first_repeat_frequency(changes: LinkedList<i32>) -> i32 {
                 frequencies.insert(sum);
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use std::collections::LinkedList;
+
+    #[test]
+    fn sum_changes_it_sums_zero_changes() {
+        let changes = LinkedList::new();
+        let res = sum_changes(changes);
+
+        assert_eq!(res, 0);
+    }
+
+    #[test]
+    fn sum_changes_it_sums_one_change() {
+        let mut changes = LinkedList::new();
+
+        changes.push_back(2);
+
+        let res = sum_changes(changes);
+
+        assert_eq!(res, 2);
+    }
+
+    #[test]
+    fn sum_changes_it_sums_multiple_changes() {
+        let mut changes = LinkedList::new();
+
+        changes.push_back(2);
+        changes.push_back(1);
+        changes.push_back(-4);
+        changes.push_back(5);
+
+        let res = sum_changes(changes);
+
+        assert_eq!(res, 4);
+    }
+
+    #[test]
+    fn get_first_repeat_frequency_it_finds_repeat_on_partial_iteration() {
+        let mut changes = LinkedList::new();
+
+        changes.push_back(2);
+        changes.push_back(1);
+        changes.push_back(-1);
+        changes.push_back(5);
+
+        let res = get_first_repeat_frequency(changes);
+
+        assert_eq!(res, 2);
+    }
+
+    #[test]
+    fn get_first_repeat_frequency_it_finds_repeat_on_second_iteration() {
+        let mut changes = LinkedList::new();
+
+        changes.push_back(-1);
+        changes.push_back(1);
+        changes.push_back(2);
+
+        let res = get_first_repeat_frequency(changes);
+
+        assert_eq!(res, 2);
     }
 }
