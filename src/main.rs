@@ -1,3 +1,5 @@
+extern crate advent_of_code_2018;
+
 fn main() {
-    println!("Hello, world!");
+    advent_of_code_2018::one::part_two();
 }
