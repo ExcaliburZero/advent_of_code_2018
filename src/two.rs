@@ -161,6 +161,8 @@ pub fn hash_string(string: String) -> i32 {
 mod tests {
     use super::*;
 
+    use std::collections::LinkedList;
+
     #[test]
     fn calc_letter_counts_it_works_on_empty_string() {
         let id = "".to_string();
@@ -197,6 +199,167 @@ mod tests {
 
         assert_eq!(counts.get(&'c'), Some(&1));
         assert_eq!(counts.get(&'d'), Some(&1));
+    }
+
+    #[test]
+    fn checksum_ids_it_works_on_empty_list() {
+        let box_ids = LinkedList::new();
+
+        let checksum = checksum_ids(box_ids);
+
+        assert_eq!(checksum, 0);
+    }
+
+    #[test]
+    fn checksum_ids_it_works_on_list_with_one_two() {
+        let mut box_ids = LinkedList::new();
+
+        box_ids.push_back("aba".to_string());
+
+        let checksum = checksum_ids(box_ids);
+
+        assert_eq!(checksum, 0);
+    }
+
+    #[test]
+    fn checksum_ids_it_works_on_list_with_one_three() {
+        let mut box_ids = LinkedList::new();
+
+        box_ids.push_back("abaca".to_string());
+
+        let checksum = checksum_ids(box_ids);
+
+        assert_eq!(checksum, 0);
+    }
+
+    #[test]
+    fn checksum_ids_it_works_on_list_with_two_two_three_three() {
+        let mut box_ids = LinkedList::new();
+
+        box_ids.push_back("aabb".to_string());
+        box_ids.push_back("ababa".to_string());
+        box_ids.push_back("aaab".to_string());
+        box_ids.push_back("aaabbb".to_string());
+
+        let checksum = checksum_ids(box_ids);
+
+        assert_eq!(checksum, 6);
+    }
+
+    #[test]
+    fn find_common_chars_in_1_diff_it_works_with_no_strings() {
+        let box_ids = LinkedList::new();
+
+        let actual = find_common_chars_in_1_diff(box_ids);
+
+        assert_eq!(actual, None);
+    }
+
+    #[test]
+    fn find_common_chars_in_1_diff_it_works_with_one_string() {
+        let mut box_ids = LinkedList::new();
+
+        box_ids.push_back("aabb".to_string());
+
+        let actual = find_common_chars_in_1_diff(box_ids);
+
+        assert_eq!(actual, None);
+    }
+
+    #[test]
+    fn find_common_chars_in_1_diff_it_works_with_two_same_strings() {
+        let mut box_ids = LinkedList::new();
+
+        box_ids.push_back("aabb".to_string());
+        box_ids.push_back("aabb".to_string());
+
+        let actual = find_common_chars_in_1_diff(box_ids);
+
+        assert_eq!(actual, None);
+    }
+
+    #[test]
+    fn find_common_chars_in_1_diff_it_works_with_multiple_strings() {
+        let mut box_ids = LinkedList::new();
+
+        box_ids.push_back("aabba".to_string());
+        box_ids.push_back("aaaaa".to_string());
+        box_ids.push_back("cccca".to_string());
+        box_ids.push_back("aabca".to_string());
+
+        let actual = find_common_chars_in_1_diff(box_ids);
+
+        assert_eq!(actual, Some("aaba".to_string()));
+    }
+
+    #[test]
+    fn off_by_one_it_works_with_empty_strings() {
+        let str_a = "";
+        let str_b = "";
+
+        let actual = off_by_one(str_a, str_b);
+
+        assert_eq!(actual, false);
+    }
+
+    #[test]
+    fn off_by_one_it_works_with_same_strings() {
+        let str_a = "aba";
+        let str_b = "aba";
+
+        let actual = off_by_one(str_a, str_b);
+
+        assert_eq!(actual, false);
+    }
+
+    #[test]
+    fn off_by_one_it_works_with_off_by_one_strings() {
+        let str_a = "aaa";
+        let str_b = "aba";
+
+        let actual = off_by_one(str_a, str_b);
+
+        assert_eq!(actual, true);
+    }
+
+    #[test]
+    fn off_by_one_it_works_with_off_by_two_strings() {
+        let str_a = "abdbcba";
+        let str_b = "abababa";
+
+        let actual = off_by_one(str_a, str_b);
+
+        assert_eq!(actual, false);
+    }
+
+    #[test]
+    fn common_chars_it_works_for_empty_strings() {
+        let str_a = "";
+        let str_b = "";
+
+        let actual = common_chars(str_a, str_b);
+
+        assert_eq!(actual, "");
+    }
+
+    #[test]
+    fn common_chars_it_works_for_diff_one_character_strings() {
+        let str_a = "a";
+        let str_b = "c";
+
+        let actual = common_chars(str_a, str_b);
+
+        assert_eq!(actual, "");
+    }
+
+    #[test]
+    fn common_chars_it_works_for_long_one_char_diff_strings() {
+        let str_a = "ababababa";
+        let str_b = "ababcbaba";
+
+        let actual = common_chars(str_a, str_b);
+
+        assert_eq!(actual, "ababbaba");
     }
 
     #[test]
