@@ -5,14 +5,14 @@ use std::io::prelude::*;
 
 pub fn part_one() {
     let changes = read_input();
-    let answer = sum_changes(changes);
+    let answer = sum_changes(&changes);
 
     println!("{}", answer);
 }
 
 pub fn part_two() {
     let changes = read_input();
-    let answer = get_first_repeat_frequency(changes);
+    let answer = get_first_repeat_frequency(&changes);
 
     println!("{}", answer);
 }
@@ -44,12 +44,12 @@ pub fn read_input() -> LinkedList<i32> {
 /// changes.push_back(-4);
 /// changes.push_back(5);
 ///
-/// let res = one::sum_changes(changes);
+/// let res = one::sum_changes(&changes);
 ///
 /// assert_eq!(res, 4);
 /// ```
-pub fn sum_changes(changes: LinkedList<i32>) -> i32 {
-    changes.iter().fold(0, |sum, x| sum + x)
+pub fn sum_changes(changes: &LinkedList<i32>) -> i32 {
+    changes.iter().sum()
 }
 
 /// Repeatedly re-sums up the given changes and returns the first repeated
@@ -68,17 +68,17 @@ pub fn sum_changes(changes: LinkedList<i32>) -> i32 {
 /// changes.push_back(-1);
 /// changes.push_back(5);
 ///
-/// let res = one::get_first_repeat_frequency(changes);
+/// let res = one::get_first_repeat_frequency(&changes);
 ///
 /// assert_eq!(res, 2);
 /// ```
-pub fn get_first_repeat_frequency(changes: LinkedList<i32>) -> i32 {
+pub fn get_first_repeat_frequency(changes: &LinkedList<i32>) -> i32 {
     let mut frequencies: HashSet<i32> = HashSet::new();
     let mut sum = 0;
 
     loop {
         for change in changes.iter() {
-            sum = sum + change;
+            sum += change;
 
             if frequencies.contains(&sum) {
                 return sum;
@@ -98,7 +98,7 @@ mod tests {
     #[test]
     fn sum_changes_it_sums_zero_changes() {
         let changes = LinkedList::new();
-        let res = sum_changes(changes);
+        let res = sum_changes(&changes);
 
         assert_eq!(res, 0);
     }
@@ -109,7 +109,7 @@ mod tests {
 
         changes.push_back(2);
 
-        let res = sum_changes(changes);
+        let res = sum_changes(&changes);
 
         assert_eq!(res, 2);
     }
@@ -123,7 +123,7 @@ mod tests {
         changes.push_back(-4);
         changes.push_back(5);
 
-        let res = sum_changes(changes);
+        let res = sum_changes(&changes);
 
         assert_eq!(res, 4);
     }
@@ -137,7 +137,7 @@ mod tests {
         changes.push_back(-1);
         changes.push_back(5);
 
-        let res = get_first_repeat_frequency(changes);
+        let res = get_first_repeat_frequency(&changes);
 
         assert_eq!(res, 2);
     }
@@ -150,7 +150,7 @@ mod tests {
         changes.push_back(1);
         changes.push_back(2);
 
-        let res = get_first_repeat_frequency(changes);
+        let res = get_first_repeat_frequency(&changes);
 
         assert_eq!(res, 2);
     }

@@ -9,14 +9,14 @@ use self::multimap::MultiMap;
 
 pub fn part_one() {
     let input = read_input();
-    let output = checksum_ids(input);
+    let output = checksum_ids(&input);
 
     println!("{}", output);
 }
 
 pub fn part_two() {
     let input = read_input();
-    let output = find_common_chars_in_1_diff(input).unwrap();
+    let output = find_common_chars_in_1_diff(&input).unwrap();
 
     println!("{}", output);
 }
@@ -37,12 +37,12 @@ pub fn read_input() -> LinkedList<String> {
     box_ids
 }
 
-pub fn checksum_ids(box_ids: LinkedList<String>) -> i32 {
+pub fn checksum_ids(box_ids: &LinkedList<String>) -> i32 {
     let mut two_counts = 0;
     let mut three_counts = 0;
 
     for id in box_ids.iter() {
-        let counts = calc_letter_counts(id.to_string());
+        let counts = calc_letter_counts(id);
 
         let mut has_two = false;
         let mut has_three = false;
@@ -67,7 +67,7 @@ pub fn checksum_ids(box_ids: LinkedList<String>) -> i32 {
     two_counts * three_counts
 }
 
-pub fn calc_letter_counts(id: String) -> HashMap<char, i32> {
+pub fn calc_letter_counts(id: &str) -> HashMap<char, i32> {
     let mut counts: HashMap<char, i32> = HashMap::new();
 
     for letter in id.chars() {
@@ -80,27 +80,24 @@ pub fn calc_letter_counts(id: String) -> HashMap<char, i32> {
     counts
 }
 
-pub fn find_common_chars_in_1_diff(box_ids: LinkedList<String>) -> Option<String> {
+pub fn find_common_chars_in_1_diff(box_ids: &LinkedList<String>) -> Option<String> {
     let mut hashes: MultiMap<i32, &str> = MultiMap::new();
 
     for id in box_ids.iter() {
         for char_i_to_remove in 0..id.len() {
             let remaining_chars = remove_char_at(id, char_i_to_remove);
-            let hash = hash_string(remaining_chars);
+            let hash = hash_string(&remaining_chars);
 
             hashes.insert(hash, id);
 
             let possible_matches = hashes.get_vec(&hash);
 
-            match possible_matches {
-                Some(possible_matches) => {
-                    for possible_match in possible_matches {
-                        if off_by_one(id, possible_match) {
-                            return Some(common_chars(id, possible_match))
-                        }
+            if let Some(possible_matches) = possible_matches {
+                for possible_match in possible_matches {
+                    if off_by_one(id, possible_match) {
+                        return Some(common_chars(id, possible_match))
                     }
-                },
-                None => {},
+                }
             }
         }
     }
@@ -145,7 +142,7 @@ pub fn remove_char_at(id: &str, i: usize) -> String {
     chars_to_keep.into_iter().collect()
 }
 
-pub fn hash_string(string: String) -> i32 {
+pub fn hash_string(string: &str) -> i32 {
     let mut hash = 1;
 
     for letter in string.chars() {
@@ -165,7 +162,7 @@ mod tests {
 
     #[test]
     fn calc_letter_counts_it_works_on_empty_string() {
-        let id = "".to_string();
+        let id = "";
 
         let counts = calc_letter_counts(id);
 
@@ -174,7 +171,7 @@ mod tests {
 
     #[test]
     fn calc_letter_counts_it_works_on_string_with_no_repeats() {
-        let id = "abcd".to_string();
+        let id = "abcd";
 
         let counts = calc_letter_counts(id);
 
@@ -188,7 +185,7 @@ mod tests {
 
     #[test]
     fn calc_letter_counts_it_works_on_string_with_multiple_repeats() {
-        let id = "aabcbda".to_string();
+        let id = "aabcbda";
 
         let counts = calc_letter_counts(id);
 
@@ -205,7 +202,7 @@ mod tests {
     fn checksum_ids_it_works_on_empty_list() {
         let box_ids = LinkedList::new();
 
-        let checksum = checksum_ids(box_ids);
+        let checksum = checksum_ids(&box_ids);
 
         assert_eq!(checksum, 0);
     }
@@ -216,7 +213,7 @@ mod tests {
 
         box_ids.push_back("aba".to_string());
 
-        let checksum = checksum_ids(box_ids);
+        let checksum = checksum_ids(&box_ids);
 
         assert_eq!(checksum, 0);
     }
@@ -227,7 +224,7 @@ mod tests {
 
         box_ids.push_back("abaca".to_string());
 
-        let checksum = checksum_ids(box_ids);
+        let checksum = checksum_ids(&box_ids);
 
         assert_eq!(checksum, 0);
     }
@@ -241,7 +238,7 @@ mod tests {
         box_ids.push_back("aaab".to_string());
         box_ids.push_back("aaabbb".to_string());
 
-        let checksum = checksum_ids(box_ids);
+        let checksum = checksum_ids(&box_ids);
 
         assert_eq!(checksum, 6);
     }
@@ -250,7 +247,7 @@ mod tests {
     fn find_common_chars_in_1_diff_it_works_with_no_strings() {
         let box_ids = LinkedList::new();
 
-        let actual = find_common_chars_in_1_diff(box_ids);
+        let actual = find_common_chars_in_1_diff(&box_ids);
 
         assert_eq!(actual, None);
     }
@@ -261,7 +258,7 @@ mod tests {
 
         box_ids.push_back("aabb".to_string());
 
-        let actual = find_common_chars_in_1_diff(box_ids);
+        let actual = find_common_chars_in_1_diff(&box_ids);
 
         assert_eq!(actual, None);
     }
@@ -273,7 +270,7 @@ mod tests {
         box_ids.push_back("aabb".to_string());
         box_ids.push_back("aabb".to_string());
 
-        let actual = find_common_chars_in_1_diff(box_ids);
+        let actual = find_common_chars_in_1_diff(&box_ids);
 
         assert_eq!(actual, None);
     }
@@ -287,7 +284,7 @@ mod tests {
         box_ids.push_back("cccca".to_string());
         box_ids.push_back("aabca".to_string());
 
-        let actual = find_common_chars_in_1_diff(box_ids);
+        let actual = find_common_chars_in_1_diff(&box_ids);
 
         assert_eq!(actual, Some("aaba".to_string()));
     }
@@ -394,7 +391,7 @@ mod tests {
 
     #[test]
     fn hash_string_it_works_on_empty_string() {
-        let string = "".to_string();
+        let string = "";
 
         let hash = hash_string(string);
 
@@ -403,7 +400,7 @@ mod tests {
 
     #[test]
     fn hash_string_it_works_on_nonempty_string() {
-        let string = "abac".to_string();
+        let string = "abac";
 
         let hash = hash_string(string);
 

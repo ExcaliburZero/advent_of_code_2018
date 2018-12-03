@@ -28,7 +28,7 @@ fn main() {
     if let Some(matches) = matches.subcommand_matches("day1") {
         let part = matches.value_of("part").unwrap();
 
-        match part.as_ref() {
+        match part {
             "one" => { advent_of_code_2018::one::part_one(); }
             "two" => { advent_of_code_2018::one::part_two(); }
             p => { println!("Unknown part: {}", p); }
@@ -36,7 +36,7 @@ fn main() {
     } else if let Some(matches) = matches.subcommand_matches("day2") {
         let part = matches.value_of("part").unwrap();
 
-        match part.as_ref() {
+        match part {
             "one" => { advent_of_code_2018::two::part_one(); }
             "two" => { advent_of_code_2018::two::part_two(); }
             p => { println!("Unknown part: {}", p); }
