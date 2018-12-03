@@ -30,7 +30,7 @@ pub fn read_input() -> Vec<Claim> {
     claims
 }
 
-fn count_claim_overlap(claims: &Vec<Claim>) -> i32 {
+fn count_claim_overlap(claims: &[Claim]) -> i32 {
     let mut fabric: [[i8; 1000]; 1000] = [[0; 1000]; 1000];
 
     for claim in claims.iter() {
@@ -77,7 +77,7 @@ pub fn construct_claim(id: i32, x1: i32, y1: i32, width: i32, height: i32) -> Cl
 }
 
 pub fn extract_claim_info(claim_str: &str) -> (i32, i32, i32, i32, i32) {
-    let mut id_and_rest = claim_str.split("@");
+    let mut id_and_rest = claim_str.split('@');
 
     let mut id = id_and_rest.next().unwrap().trim().to_string();
     id.remove(0);
@@ -86,17 +86,17 @@ pub fn extract_claim_info(claim_str: &str) -> (i32, i32, i32, i32, i32) {
 
     let non_id = id_and_rest.next().unwrap();
 
-    let mut start_and_dims = non_id.split(":");
+    let mut start_and_dims = non_id.split(':');
 
     let start = start_and_dims.next().unwrap().trim();
     let dims = start_and_dims.next().unwrap().trim();
 
-    let mut x1_and_y1 = start.split(",");
+    let mut x1_and_y1 = start.split(',');
 
     let x1: i32 = x1_and_y1.next().unwrap().parse().unwrap();
     let y1: i32 = x1_and_y1.next().unwrap().parse().unwrap();
 
-    let mut width_and_height = dims.split("x");
+    let mut width_and_height = dims.split('x');
 
     let width: i32 = width_and_height.next().unwrap().parse().unwrap();
     let height: i32 = width_and_height.next().unwrap().parse().unwrap();
@@ -119,7 +119,7 @@ pub fn apply_claim(fabric: &mut [[i8; 1000]; 1000], claim: &Claim) {
     }
 }
 
-pub fn find_non_overlapping_claim(claims: &Vec<Claim>) -> Option<i32> {
+pub fn find_non_overlapping_claim(claims: &[Claim]) -> Option<i32> {
     let mut fabric: [[i8; 1000]; 1000] = [[0; 1000]; 1000];
 
     for claim in claims.iter() {
