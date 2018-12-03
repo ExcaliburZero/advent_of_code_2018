@@ -128,6 +128,8 @@ pub fn apply_claim(fabric: &mut [[i8; 1000]; 1000], claim: &Claim) {
     }
 }
 
+/// Finds the first of the given claims that does not overlap with any other
+/// claim.
 pub fn find_non_overlapping_claim(claims: &[Claim]) -> Option<i32> {
     let mut fabric: [[i8; 1000]; 1000] = [[0; 1000]; 1000];
 
@@ -166,6 +168,39 @@ mod tests {
     use super::*;
 
     #[test]
+    fn count_claim_overlap_it_works_on_a_case_with_no_claims() {
+        let claims = vec![];
+        let actual = count_claim_overlap(&claims);
+
+        assert_eq!(actual, 0);
+    }
+
+    #[test]
+    fn count_claim_overlap_it_works_on_a_case_with_overlap() {
+        let claim1 = Claim {
+            id: 1,
+            x1: 1,
+            y1: 1,
+            x2: 5,
+            y2: 5,
+        };
+
+        let claim2 = Claim {
+            id: 2,
+            x1: 2,
+            y1: 2,
+            x2: 5,
+            y2: 5,
+        };
+
+        let claims = vec![claim1, claim2];
+
+        let actual = count_claim_overlap(&claims);
+
+        assert_eq!(actual, 9);
+    }
+
+    #[test]
     fn count_overlap_it_works_on_a_case_with_overlap() {
         let mut fabric: [[i8; 1000]; 1000] = [[0; 1000]; 1000];
 
@@ -178,7 +213,7 @@ mod tests {
         };
 
         let claim2 = Claim {
-            id: 1,
+            id: 2,
             x1: 2,
             y1: 2,
             x2: 5,
@@ -264,7 +299,7 @@ mod tests {
         };
 
         let claim2 = Claim {
-            id: 1,
+            id: 2,
             x1: 2,
             y1: 3,
             x2: 7,
@@ -295,5 +330,119 @@ mod tests {
                 assert_eq!(fabric[x][y], expected);
             }
         }
+    }
+
+    #[test]
+    fn find_non_overlapping_claim_it_works_on_all_overlapping_claims() {
+        let claim1 = Claim {
+            id: 1,
+            x1: 1,
+            y1: 1,
+            x2: 5,
+            y2: 5,
+        };
+
+        let claim2 = Claim {
+            id: 2,
+            x1: 2,
+            y1: 2,
+            x2: 5,
+            y2: 5,
+        };
+
+        let claims = vec![claim1, claim2];
+
+        let actual = find_non_overlapping_claim(&claims);
+
+        assert_eq!(actual, None);
+    }
+
+    #[test]
+    fn find_non_overlapping_claim_it_works_on_a_case_with_a_non_overlapping_claim() {
+        let claim1 = Claim {
+            id: 1,
+            x1: 1,
+            y1: 1,
+            x2: 5,
+            y2: 5,
+        };
+
+        let claim2 = Claim {
+            id: 2,
+            x1: 2,
+            y1: 2,
+            x2: 5,
+            y2: 5,
+        };
+
+        let claim3 = Claim {
+            id: 3,
+            x1: 9,
+            y1: 9,
+            x2: 19,
+            y2: 19,
+        };
+
+        let claims = vec![claim1, claim2, claim3];
+
+        let actual = find_non_overlapping_claim(&claims);
+
+        assert_eq!(actual, Some(3));
+    }
+
+    #[test]
+    fn claim_is_non_overlapping_it_works_on_an_overlapping_claim() {
+        let mut fabric: [[i8; 1000]; 1000] = [[0; 1000]; 1000];
+
+        let claim1 = Claim {
+            id: 1,
+            x1: 1,
+            y1: 1,
+            x2: 5,
+            y2: 5,
+        };
+
+        let claim2 = Claim {
+            id: 2,
+            x1: 2,
+            y1: 2,
+            x2: 5,
+            y2: 5,
+        };
+
+        apply_claim(&mut fabric, &claim1);
+        apply_claim(&mut fabric, &claim2);
+
+        let actual = claim_is_non_overlapping(&fabric, &claim1);
+
+        assert_eq!(actual, false);
+    }
+
+    #[test]
+    fn claim_is_non_overlapping_it_works_on_a_non_overlapping_claim() {
+        let mut fabric: [[i8; 1000]; 1000] = [[0; 1000]; 1000];
+
+        let claim1 = Claim {
+            id: 1,
+            x1: 1,
+            y1: 1,
+            x2: 5,
+            y2: 5,
+        };
+
+        let claim2 = Claim {
+            id: 2,
+            x1: 20,
+            y1: 20,
+            x2: 25,
+            y2: 25,
+        };
+
+        apply_claim(&mut fabric, &claim1);
+        apply_claim(&mut fabric, &claim2);
+
+        let actual = claim_is_non_overlapping(&fabric, &claim1);
+
+        assert_eq!(actual, true);
     }
 }
