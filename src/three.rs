@@ -30,6 +30,8 @@ pub fn read_input() -> Vec<Claim> {
     claims
 }
 
+/// Returns the number of cells in the 1000 by 1000 fabric that are claimed by
+/// more than one of the given claims.
 fn count_claim_overlap(claims: &[Claim]) -> i32 {
     let mut fabric: [[i8; 1000]; 1000] = [[0; 1000]; 1000];
 
@@ -40,6 +42,9 @@ fn count_claim_overlap(claims: &[Claim]) -> i32 {
     count_overlap(&fabric)
 }
 
+/// Returns the number of cells in the given fabric grid that have had multiple
+/// claims applied to them. All of the claims must have already been applied to
+/// the fabric grid.
 fn count_overlap(fabric: &[[i8; 1000]; 1000]) -> i32 {
     let mut count = 0;
     for x in 0 .. 1000 {
@@ -76,6 +81,7 @@ pub fn construct_claim(id: i32, x1: i32, y1: i32, width: i32, height: i32) -> Cl
     }
 }
 
+/// Extracts the claim information from the given claim description string.
 pub fn extract_claim_info(claim_str: &str) -> (i32, i32, i32, i32, i32) {
     let mut id_and_rest = claim_str.split('@');
 
@@ -104,6 +110,9 @@ pub fn extract_claim_info(claim_str: &str) -> (i32, i32, i32, i32, i32) {
     (id, x1, y1, width, height)
 }
 
+/// Applies the given claim to the given fabric grid, setting all cells for the
+/// claim to 1, unless it is already covered by a different claim in which case
+/// it is set to 2.
 pub fn apply_claim(fabric: &mut [[i8; 1000]; 1000], claim: &Claim) {
     for x in claim.x1 .. claim.x2 {
         for y in claim.y1 .. claim.y2 {
@@ -135,6 +144,8 @@ pub fn find_non_overlapping_claim(claims: &[Claim]) -> Option<i32> {
     None
 }
 
+/// Checks if the given claim doesnt overlap with any other claim, by looking
+/// at a fabric grid that has already had all claims applied to it.
 pub fn claim_is_non_overlapping(fabric: &[[i8; 1000]; 1000], claim: &Claim) -> bool {
     for x in claim.x1 .. claim.x2 {
         for y in claim.y1 .. claim.y2 {
@@ -153,6 +164,35 @@ pub fn claim_is_non_overlapping(fabric: &[[i8; 1000]; 1000], claim: &Claim) -> b
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn count_overlap_it_works_on_a_case_with_overlap() {
+        let mut fabric: [[i8; 1000]; 1000] = [[0; 1000]; 1000];
+
+        let claim1 = Claim {
+            id: 1,
+            x1: 1,
+            y1: 1,
+            x2: 5,
+            y2: 5,
+        };
+
+        let claim2 = Claim {
+            id: 1,
+            x1: 2,
+            y1: 2,
+            x2: 5,
+            y2: 5,
+        };
+
+        apply_claim(&mut fabric, &claim1);
+        apply_claim(&mut fabric, &claim2);
+
+        let actual = count_overlap(&fabric);
+
+        assert_eq!(actual, 9);
+    }
+
 
     #[test]
     fn construct_claim_it_works_on_an_odd_case() {
@@ -177,5 +217,83 @@ mod tests {
         let actual = extract_claim_info(claim_str);
 
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn apply_claim_it_works_on_a_simple_case() {
+        let mut fabric: [[i8; 1000]; 1000] = [[0; 1000]; 1000];
+
+        let claim = Claim {
+            id: 1,
+            x1: 2,
+            y1: 3,
+            x2: 7,
+            y2: 12,
+        };
+
+        apply_claim(&mut fabric, &claim);
+
+        for x in 0 .. 1000 {
+            for y in 0 .. 1000 {
+                if x >= claim.x1 && x < claim.x2 && y >= claim.y1 &&
+                    y < claim.y2 {
+                    let x = x as usize;
+                    let y = y as usize;
+
+                    assert_eq!(fabric[x][y], 1);
+                } else {
+                    let x = x as usize;
+                    let y = y as usize;
+
+                    assert_eq!(fabric[x][y], 0);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn apply_claim_it_works_on_a_case_with_overlap() {
+        let mut fabric: [[i8; 1000]; 1000] = [[0; 1000]; 1000];
+
+        let claim1 = Claim {
+            id: 1,
+            x1: 5,
+            y1: 7,
+            x2: 7,
+            y2: 12,
+        };
+
+        let claim2 = Claim {
+            id: 1,
+            x1: 2,
+            y1: 3,
+            x2: 7,
+            y2: 12,
+        };
+
+        apply_claim(&mut fabric, &claim1);
+        apply_claim(&mut fabric, &claim2);
+
+        for x in 0 .. 1000 {
+            for y in 0 .. 1000 {
+                let in_claim1 = x >= claim1.x1 && x < claim1.x2 && y >= claim1.y1
+                    && y < claim1.y2;
+                let in_claim2 = x >= claim2.x1 && x < claim2.x2 && y >= claim2.y1
+                    && y < claim2.y2;
+
+                let expected = if in_claim1 && in_claim2 {
+                    2
+                } else if in_claim1 || in_claim2 {
+                    1
+                } else {
+                    0
+                };
+
+                let x = x as usize;
+                let y = y as usize;
+
+                assert_eq!(fabric[x][y], expected);
+            }
+        }
     }
 }
